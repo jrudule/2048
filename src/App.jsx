@@ -10,14 +10,18 @@ function App() {
 
 
   function startGame() {    
+    const [firstStartingRol, firstStartingCol] = [Math.floor(Math.random() * 4), Math.floor(Math.random() * 4)];
     const emptyCells = [];
+
     board.forEach((row, rIndex) => {
       row.forEach((cell, cIndex) => {
-        if (!cell) emptyCells.push([rIndex, cIndex]);
+        if (rIndex === firstStartingRol && cIndex === firstStartingCol) {} 
+        else {
+          emptyCells.push([rIndex, cIndex]);
+        }
       });
     }); 
 
-    const [firstStartingRol, firstStartingCol] = emptyCells[Math.floor(Math.random() * emptyCells.length)];
     const [secondStartingRol, secondStartingCol] = emptyCells[Math.floor(Math.random() * emptyCells.length)];
 
     const newBoard = board.map((row, rIndex) =>
@@ -83,24 +87,42 @@ function App() {
       });
     }); 
 
-    const newNumbers = [2, 2, 2, 4]; // 2 appears 3 times, 4 appears once
-    const randomNewNumber = Math.floor(Math.random() * newNumbers.length);
-    const [newRow, newCol] = emptyCells[Math.floor(Math.random() * emptyCells.length)];
 
-    const newBoard = board.map((row, rIndex) =>
-      row.map((cell, cIndex) => 
-        (rIndex === newRow && cIndex === newCol ? newNumbers[randomNewNumber] : cell)
-      )
-    );
+    if (emptyCells.length > 0){
+      const newNumbers = [2, 2, 2, 4];
+      const randomNewNumber = Math.floor(Math.random() * newNumbers.length);
+      const [newRow, newCol] = emptyCells[Math.floor(Math.random() * emptyCells.length)];
 
-    return newBoard;
+      const newBoard = board.map((row, rIndex) =>
+        row.map((cell, cIndex) => 
+          (rIndex === newRow && cIndex === newCol ? newNumbers[randomNewNumber] : cell)
+        )
+      );
+
+      return newBoard;
+    } else {
+      return board;
+    }
+  }
+
+  function checkGameEnd(line) {
+    var nonEmpty = line.filter((val) => val !== ''); 
+    if (nonEmpty.length < 4) return false;
+    for (let i = 0; i < nonEmpty.length; i++) {
+      if(nonEmpty[i] === nonEmpty[i+1]){
+        return false;
+      }
+    } 
+    return true; 
   }
 
   function moveNumbers(board, pressedKey) {
     var newBoard = [];
+    var gameEnd = [];
     if (pressedKey === 'LEFT' || pressedKey === 'RIGHT') {
       for (let row of board) {
         newBoard.push(pushToSides(row, pressedKey));
+        gameEnd.push(checkGameEnd(row));
       }
     }
     if (pressedKey === 'UP' || pressedKey === 'DOWN') {
@@ -115,10 +137,34 @@ function App() {
       }   
     }
 
+    //game end [true, true, true, true]
+    for (let i = 0; i < gameEnd.length; i++) {
+      var cnt;
+      if(gameEnd[i] === "true"){cnt++;}
+      if(cnt === 4) {setIsEnded(true); return;}
+    }
+
+    
+    console.log(gameEnd);
     newBoard = newNumber(newBoard);
-    console.log(newBoard);
     setBoard(newBoard);
   }
+
+  const colorMap = {
+    2: "#B0C4DE", // Light Steel Blue
+    4: "#D8BFD8", // Thistle
+    8: "#F5DEB3", // Wheat
+    16: "#98FB98", // Pale Green
+    32: "#F0E68C", // Khaki
+    64: "#C3B1E1", // Light Purple
+    128: "#E6A8D7", // Orchid Pink
+    256: "#A2D2FF", // Light Sky Blue
+    512: "#FAD2E1", // Misty Rose
+    1024: "#FFDFBA", // Peach Puff
+    2048: "#B8E2D2", // Pale Mint
+    4096: "#F9E79F", // Pale Yellow
+    8192: "#C6DBDA", // Light Teal Gray
+  };
 
   useEffect(() => {
     function changeDirection(event) {
@@ -153,10 +199,11 @@ function App() {
       <div className='board'>
         {board.map((row, rowIndex) => (
           <div key={rowIndex} className="row">
-            {row.map((symbol, colIndex) => (
+            {row.map((number, colIndex) => (
               <div key={colIndex} className="col"
+                  style={{backgroundColor: colorMap[number] || ''}}
               >
-                {symbol}
+                {number}
               </div>
             ))}      
           </div>
