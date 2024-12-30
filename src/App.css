@@ -1,7 +1,6 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
 }
 
@@ -37,6 +36,31 @@ body{
   }
 }
 
+.hidden {
+  display: none;
+}
+
+.start{
+  margin-top: -140px;
+}
+
+.start h1 {
+  font-size: 70px;
+}
+
+.startButton {
+  background: #73ad80;
+  padding: 10px 30px;
+  font-weight: bold;
+  font-size: 22px;
+  width: max-content;
+  border: black solid 1px;
+
+}
+.startButton:hover {
+  background: #217633;
+}
+
 .card {
   padding: 2em;
 }
@@ -45,9 +69,13 @@ body{
   color: #888;
 }
 
+.restartWhilePlaying {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
 .board {
-  background: #000;
-  border: black 5px solid;
   border-radius: 20px;
 }
 .row {
@@ -66,4 +94,31 @@ body{
   color: rgb(43, 43, 43);
   font-size: 35px;
   font-weight: bold;
+}
+
+.endDiv {
+  display: flex;
+  flex-direction: column;
+  padding: 0 40px;
+  margin-top: 10px;
+  gap: 20px;
+}
+
+.continueButton, .restartButton {
+  font-weight: bold;
+  padding: 10px 20px;
+  font-size: 20px;
+  border: black solid 1px;
+}
+.continueButton{
+  background: #ffe8c6;
+}
+.continueButton:hover {
+  background: #ebca9a;
+}
+.restartButton{
+  background: #e09b32;
+}
+.restartButton:hover {
+  background: #ae6d0c;
 }
