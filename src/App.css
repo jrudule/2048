@@ -6,6 +6,9 @@
 
 body{
   background: #acabab;
+  height: 85vh;
+  overscroll-behavior: contain;
+  overflow: hidden;
 }
 
 .logo {
@@ -170,6 +173,8 @@ body{
 .restartButton:hover {
   background: #ae6d0c;
 }
+
+
 
 @media screen and (max-width: 500px) {
   .col {
