@@ -3,6 +3,7 @@ import './App.css'
 
 function App() {
   const [isStarted, setIsStarted] = useState(false);
+  const [showRules, setShowRules] = useState(false);
   const [board, setBoard] = useState(Array(4).fill(Array(4).fill('')));
   // To set pressed key in keyboard
   const [keyWord, setKeyWord] = useState(null); 
@@ -219,6 +220,61 @@ function App() {
     };
   }, [board]);
 
+  // So the game can also be played with a touchscreen
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+  
+    function handleTouchStart(event) {
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+    }
+  
+    function handleTouchEnd(event) {
+      touchEndX = event.changedTouches[0].clientX;
+      touchEndY = event.changedTouches[0].clientY;
+      handleSwipe();
+    }
+  
+    function handleSwipe() {
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+  
+      if (isEnded === false) {
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+          // Horizontal swipe
+          if (diffX > 0) {
+            moveNumbers(board, 'RIGHT');
+            setKeyWord('RIGHT');
+          } else {
+            moveNumbers(board, 'LEFT');
+            setKeyWord('LEFT');
+          }
+        } else {
+          // Vertical swipe
+          if (diffY > 0) {
+            moveNumbers(board, 'DOWN');
+            setKeyWord('DOWN');
+          } else {
+            moveNumbers(board, 'UP');
+            setKeyWord('UP');
+          }
+        }
+      }
+    }
+  
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchend', handleTouchEnd);
+  
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [board, isEnded]);
+  
+
   function restartGame() {
     setIsEnded(false);
     setIsStarted(false);
@@ -231,6 +287,20 @@ function App() {
 
   return (
     <> 
+      <div className={showRules ? 'rules' : 'hidden'}>
+        <div className='x' onClick={() => setShowRules(false)}>x</div>
+        <h2>2048 Game Rules</h2>
+        <p>The goal of 2048 is to combine cells with the same number to reach the cell 2048.</p>
+        <ul>
+            <li><strong>Keyboard:</strong> Use the arrow keys <strong>↑ ↓ ← →</strong> or <strong>w s a d</strong> to move cells on the board.</li>
+            <li><strong>Touch:</strong> Swipe in the direction you want the snake to move.</li>
+            <li>When two cells with the same number collide, they merge into one.</li>
+            <li>Each move adds a new cell (2 or 4) to the board.</li>
+            <li>The game ends when the board is full and no more moves are possible.</li>
+        </ul>
+        <p>Try to strategize and combine the cells to reach 2048 or even higher!</p>
+      </div>
+
       <div 
         className={`
           ${isEnded ? 'hidden' : 'restartWhilePlaying'}
@@ -241,16 +311,17 @@ function App() {
             Restart
         </button>
       </div>
-      <div 
-        className={`
-          ${isStarted ? 'hidden' : 'start'} 
-          ${isEnded ? 'hidden' : 'start'}
-        `}
-      >
-        <h1>2048</h1>
-        <button className='startButton' onClick={() => startGame()}>
-          Start
-        </button>
+
+      <div className={isStarted ? 'hidden' : ''}>
+        <div className={isEnded ? 'hidden' : 'start'}>
+          <h1>2048</h1>
+          <button className='startButton' onClick={() => startGame()}>
+            Start
+          </button>
+          <button className='howToPlay' onClick={() => setShowRules(true)}>
+            HOW TO PLAY
+          </button>
+        </div>
       </div>
 
       <div className={isEnded ? '' : 'hidden'}>
