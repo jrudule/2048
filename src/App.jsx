@@ -227,6 +227,10 @@ function App() {
     let touchEndX = 0;
     let touchEndY = 0;
   
+    function preventDefault(event) {
+      event.preventDefault();
+    }
+  
     function handleTouchStart(event) {
       touchStartX = event.touches[0].clientX;
       touchStartY = event.touches[0].clientY;
@@ -265,14 +269,25 @@ function App() {
       }
     }
   
+    function disableScroll() {
+      document.addEventListener('touchmove', preventDefault, { passive: false });
+    }
+  
+    function enableScroll() {
+      document.removeEventListener('touchmove', preventDefault);
+    }
+  
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchend', handleTouchEnd);
+    disableScroll(); // Disable scrolling when the component mounts
   
     return () => {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
+      enableScroll(); // Re-enable scrolling when the component unmounts
     };
   }, [board, isEnded]);
+  
   
 
   function restartGame() {
